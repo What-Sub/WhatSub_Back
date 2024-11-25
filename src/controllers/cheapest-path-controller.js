@@ -1,5 +1,6 @@
-const { StatusCodes } = require('http-status-codes');
 const ShortestCostService = require('../services/cheapest-path-service');
+const { StatusCodes } = require('http-status-codes');
+
 const ShortestCostController = {
   async getShortestCostPath(req, res) {
     try {
@@ -15,11 +16,7 @@ const ShortestCostController = {
       const service = new ShortestCostService();
       const result = await service.calculateShortestCostPath(Number(startStation), Number(endStation));
 
-      return res.status(StatusCodes.OK).json({
-        status: StatusCodes.OK,
-        message: 'Cheapest path calculated successfully',
-        data: result,
-      });
+      return res.status(StatusCodes.OK).json(result);
     } catch (error) {
       console.error('❌ Error in getShortestCostPath:', error.message);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
