@@ -22,10 +22,19 @@ class LeastTransfersModel {
     }
   }
 
+  /**
+   * Convert seconds into "X시간 Y분 Z초" or "Y분 Z초"
+   */
   static formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}분 ${remainingSeconds}초`;
+
+    if (hours > 0) {
+      return `${hours}시간 ${minutes}분 ${remainingSeconds}초`;
+    } else {
+      return `${minutes}분 ${remainingSeconds}초`;
+    }
   }
 
   static formatCost(cost) {
@@ -61,7 +70,6 @@ class LeastTransfersModel {
         if (currentStation === endStation) break;
 
         this.graph[currentStation].forEach(({ toNode, timeWeight, costWeight, lineNumber }) => {
-          // 수정된 부분 시작
           let isTransfer = 0;
           if (previous[currentStation]) {
             if (previous[currentStation].lineNumber !== lineNumber) {
@@ -69,7 +77,6 @@ class LeastTransfersModel {
             }
           }
           const newTransfers = transfers[currentStation] + isTransfer;
-          // 수정된 부분 끝
 
           if (
             newTransfers < transfers[toNode] ||
@@ -88,7 +95,6 @@ class LeastTransfersModel {
         });
       }
 
-      // 경로 구성
       const rawPath = [];
       let currentStation = endStation;
       while (currentStation) {
@@ -104,7 +110,6 @@ class LeastTransfersModel {
         currentStation = prev.fromStation;
       }
 
-      // 동일한 호선 구간 병합
       const pathTransfers = [];
       rawPath.forEach((segment) => {
         const lastTransfer = pathTransfers[pathTransfers.length - 1];
@@ -117,13 +122,11 @@ class LeastTransfersModel {
         }
       });
 
-      // 시간 및 비용 형식화
       pathTransfers.forEach((transfer) => {
         transfer.timeOnLine = LeastTransfersModel.formatTime(transfer.timeOnLine);
         transfer.costOnLine = LeastTransfersModel.formatCost(transfer.costOnLine);
       });
 
-      // 총 비용 계산
       const totalCostValue = pathTransfers.reduce(
         (sum, transfer) => sum + parseInt(transfer.costOnLine.replace(/[^\d]/g, ''), 10),
         0
