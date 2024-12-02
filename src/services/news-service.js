@@ -1,12 +1,12 @@
-// src/controllers/newsController.js
-const db = require('../../config/database');  // 경로는 수정된 그대로
+const newsModel = require('../models/news-model'); // Model 호출
 
-exports.getNews = async (req, res) => {
+exports.getNews = async () => {
     try {
-        const [results] = await db.query('SELECT * FROM News');
-        res.json(results);
+        // Model에서 데이터를 가져와서 처리
+        const newsData = await newsModel.getAllNews();
+        return newsData; // Service에서 처리된 데이터 반환
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Error fetching news data');
+        console.error('Error in service layer:', err);
+        throw new Error('Error in service layer');
     }
 };
