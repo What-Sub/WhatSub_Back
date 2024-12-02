@@ -11,6 +11,8 @@ dotenv.config();
 const db = require('../config/database.js');
 
 // 라우터 선언 
+const newsRoutes = require('./routes/news-routes.js');  // src 폴더 경로로 수정
+
 
 
 // Express 앱 설정
@@ -36,15 +38,17 @@ app.use(express.urlencoded({ extended: false }));
 
 
 //라우터
+// 뉴스 라우터 사용
+app.use(newsRoutes);
 
 
 // 404 에러 처리 미들웨어
 app.use((req, res, next) => {
-    const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
-    error.status = 404;
-    next(error);
-  });
-  
+  const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
+  error.status = 404;
+  next(error);
+});
+
 // 서버 시작
 const port = 3000;
 app.listen(port, () => {
